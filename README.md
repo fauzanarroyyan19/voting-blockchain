@@ -248,7 +248,7 @@ Through this project, I explored and implemented:
 
 ## Author
 
-**Fauzan Arroyyan**
+**Fauzan Ar Royyan**
 
 Informatics Graduate | Web Developer | AI & Machine Learning Enthusiast
 
