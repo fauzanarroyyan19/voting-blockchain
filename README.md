@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Voting Blockchain
 
 A local blockchain voting demo built with Solidity, Hardhat, React, Vite, Ethers.js, and MetaMask.
@@ -68,3 +69,6 @@ For local testing, import a Hardhat development account into MetaMask. Hardhat's
 - Restarting the local Hardhat node resets its state. Redeploy the contract afterward; previous local votes are not carried over.
 
 This repository is configured for local development. A public portfolio deployment requires a public test network, a deployed contract on that network, and a frontend configured for the same chain.
+=======
+# voting-blockchain
+>>>>>>> d021a65be6919340b4819f12df3f1caafbf92a7b
