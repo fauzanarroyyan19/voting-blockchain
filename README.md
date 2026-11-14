@@ -44,6 +44,34 @@ Admin Mode is exclusively accessible to the wallet address that owns the deploye
 - **Recent Voters:** Monitor the latest voting activity.
 - **Export Results:** Print or save election results as a PDF using the **Print Results** feature.
 
+## Screenshots
+
+The screenshots below show the application running on the local Hardhat network.
+
+### Main Page
+
+The main page shows the connected wallet, active network, contract address, and current voting status.
+
+![Voting application main page](docs/screenshots/halamanutama.png)
+
+### User Mode
+
+User Mode displays the total number of voters, the number of other voters, the connected wallet's voting status, and the candidate list with voting controls.
+
+![Voting application User Mode](docs/screenshots/halamanuser.png)
+
+### Admin Mode
+
+Admin Mode is available to the contract owner. It provides voter statistics, a daily voter chart, candidate management, and the print-results control. Candidate additions are locked after the first vote.
+
+![Voting application Admin Mode](docs/screenshots/halamanadmin.png)
+
+### MetaMask Vote Confirmation
+
+After selecting a candidate, the voter reviews and confirms the blockchain transaction in MetaMask. The application displays the candidate name before opening MetaMask; MetaMask authorizes the contract transaction.
+
+![MetaMask vote transaction confirmation](docs/screenshots/konfrimmetamask.png)
+
 ## 📜 Voting Rules & Mechanism
 
 The voting process is governed by predefined smart contract rules to maintain consistency and transparency.
@@ -116,6 +144,13 @@ voting-blockchain/
 │
 ├── contracts/
 │   └── Voting.sol
+│
+├── docs/
+│   └── screenshots/
+│       ├── halamanutama.png
+│       ├── halamanuser.png
+│       ├── halamanadmin.png
+│       └── konfrimmetamask.png
 │
 ├── scripts/
 │   └── deploy.js
