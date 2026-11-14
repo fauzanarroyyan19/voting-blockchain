@@ -1,0 +1,18 @@
+node_modules/
+.env
+.env.*
+!.env.example
+
+# Hardhat files
+/cache/
+/artifacts/
+/coverage/
+/coverage.json
+
+# Frontend build output
+/voting-frontend/dist/
+/voting-frontend/npm
+
+# TypeChain files
+/typechain
+/typechain-types
