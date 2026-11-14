@@ -5,6 +5,7 @@ import { CONTRACT_ADDRESS, DEPLOYMENT_BLOCK } from "./config";
 import "./App.css";
 
 const EXPECTED_CHAIN_ID = 31337;
+const LOCAL_RPC_URL = "http://127.0.0.1:8545";
 
 function shortAddress(address) {
   return address ? `${address.slice(0, 6)}…${address.slice(-4)}` : "—";
@@ -144,11 +145,9 @@ function App() {
         accounts = await walletProvider.send(requestAccess ? "eth_requestAccounts" : "eth_accounts", []);
         const network = await walletProvider.getNetwork();
         setChainId(network.chainId);
-        provider = network.chainId === EXPECTED_CHAIN_ID
-          ? walletProvider
-          : new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+        provider = new ethers.providers.JsonRpcProvider(LOCAL_RPC_URL);
       } else {
-        provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545");
+        provider = new ethers.providers.JsonRpcProvider(LOCAL_RPC_URL);
         const network = await provider.getNetwork();
         setChainId(network.chainId);
       }
@@ -213,10 +212,53 @@ function App() {
     }
   };
 
-  const handleVote = (candidateId) => submitTransaction(
-    (contract) => contract.vote(candidateId),
-    "Suara berhasil dicatat di blockchain."
-  );
+  const handleVote = async (candidateId) => {
+    const displayedCandidate = candidates.find((candidate) => candidate.id === candidateId);
+    if (!displayedCandidate) return;
+    if (!connected || !account) {
+      setNotice({ type: "error", message: "Hubungkan MetaMask terlebih dahulu." });
+      return;
+    }
+    if (chainId !== EXPECTED_CHAIN_ID) {
+      setNotice({ type: "error", message: "Pilih jaringan Hardhat Local (Chain ID 31337) di MetaMask." });
+      return;
+    }
+
+    try {
+      const walletProvider = new ethers.providers.Web3Provider(window.ethereum, "any");
+      const localProvider = new ethers.providers.JsonRpcProvider(LOCAL_RPC_URL);
+      const walletContract = new ethers.Contract(CONTRACT_ADDRESS, VotingABI.abi, walletProvider);
+      const localContract = new ethers.Contract(CONTRACT_ADDRESS, VotingABI.abi, localProvider);
+      const [walletCandidate, localCandidate, walletOwner, localOwner, walletStart, localStart] = await Promise.all([
+        walletContract.candidates(candidateId),
+        localContract.candidates(candidateId),
+        walletContract.owner(),
+        localContract.owner(),
+        walletContract.votingStartTime(),
+        localContract.votingStartTime(),
+      ]);
+      if (
+        localCandidate.name !== displayedCandidate.name ||
+        walletCandidate.name !== localCandidate.name ||
+        walletOwner.toLowerCase() !== localOwner.toLowerCase() ||
+        !walletStart.eq(localStart)
+      ) {
+        await initialize();
+        setNotice({ type: "error", message: "Jaringan MetaMask berbeda dari Hardhat Node yang dipakai aplikasi. Periksa RPC URL MetaMask harus http://127.0.0.1:8545, lalu muat ulang halaman." });
+        return;
+      }
+
+      const confirmed = window.confirm(`Kamu akan memilih: ${localCandidate.name}\n\nPastikan nama ini benar sebelum menyetujui transaksi di MetaMask.`);
+      if (!confirmed) return;
+
+      await submitTransaction(
+        (contract) => contract.vote(candidateId),
+        `Suara untuk ${localCandidate.name} berhasil dicatat di blockchain.`
+      );
+    } catch (error) {
+      setNotice({ type: "error", message: errorMessage(error) });
+    }
+  };
 
   const handleAddCandidate = async (event) => {
     event.preventDefault();
@@ -229,7 +271,7 @@ function App() {
     if (added) setCandidateName("");
   };
 
-  const displayedMode = isOwner && mode === "admin" ? "admin" : "user";
+  const displayedMode = mode;
 
   return (
     <main className="app-shell">
@@ -270,7 +312,7 @@ function App() {
 
       <nav className="mode-switch" aria-label="Mode aplikasi">
         <button className={displayedMode === "user" ? "active" : ""} onClick={() => setMode("user")}>Mode User</button>
-        {isOwner && <button className={displayedMode === "admin" ? "active" : ""} onClick={() => setMode("admin")}>Mode Admin <span className="admin-pill">OWNER</span></button>}
+        <button className={displayedMode === "admin" ? "active" : ""} onClick={() => setMode("admin")}>Mode Admin <span className="admin-pill">OWNER</span></button>
       </nav>
 
       {displayedMode === "user" ? (
@@ -298,7 +340,20 @@ function App() {
         </section>
       ) : (
         <section className="admin-view">
+          {!isOwner ? (
+            <div className="admin-access-card">
+              <span className="access-lock" aria-hidden="true">⌑</span>
+              <p className="eyebrow">AKSES ADMIN</p>
+              <h2>Hubungkan wallet owner</h2>
+              <p>Menu admin hanya dapat digunakan oleh wallet yang membuat kontrak. Wallet owner kontrak ini:</p>
+              <code>{owner || "Belum tersedia"}</code>
+              <button className="button button-dark" onClick={() => initialize(true)} disabled={busy}>Pilih / hubungkan wallet</button>
+              <p className="access-note">Kamu tetap dapat melihat hasil voting di Mode User.</p>
+            </div>
+          ) : <>
           <div className="admin-heading"><div><p className="eyebrow">RUANG KENDALI OWNER</p><h2>Dashboard admin</h2><p>Pantau partisipasi dan kelola kandidat pemilihan.</p></div><span className="admin-owner-badge"><span className="owner-check">✓</span>Owner terverifikasi</span></div>
+          <div className="admin-toolbar"><div><strong>Hasil pemilihan</strong><span>Siap dicetak atau disimpan sebagai PDF.</span></div><button className="button button-print" onClick={() => window.print()}><span aria-hidden="true">▤</span> Cetak hasil</button></div>
+          <div className="print-heading"><p>HASIL PEMILIHAN</p><h1>Voting Blockchain</h1><span>Kontrak {CONTRACT_ADDRESS}</span></div>
           <div className="admin-stats">
             <article className="admin-stat-card"><span>Total voter</span><strong>{totalVotes}</strong><small>alamat wallet sudah memilih</small></article>
             <article className="admin-stat-card"><span>Kandidat</span><strong>{candidates.length}</strong><small>terdaftar pada kontrak</small></article>
@@ -308,12 +363,13 @@ function App() {
             <section className="admin-card chart-card"><div className="admin-card-heading"><div><p className="eyebrow">PARTISIPASI</p><h3>Grafik voter</h3></div><span className="chart-total"><strong>{totalVotes}</strong> total</span></div><VoterChart events={history} /></section>
             <section className="admin-card candidate-admin-card"><div className="admin-card-heading"><div><p className="eyebrow">PENGELOLAAN</p><h3>Kandidat</h3></div><span className="candidate-count">{candidates.length} terdaftar</span></div>
               <div className="admin-candidate-list">{candidates.map((candidate, index) => <div className="admin-candidate-row" key={candidate.id}><span className="candidate-number">{String(index + 1).padStart(2, "0")}</span><strong>{candidate.name}</strong><span>{candidate.voteCount} suara</span></div>)}</div>
-              {!candidatesLocked ? <form className="admin-add-form" onSubmit={handleAddCandidate}><label htmlFor="candidate-name">Tambah nama kandidat</label><div className="admin-form-row"><input id="candidate-name" value={candidateName} onChange={(event) => setCandidateName(event.target.value)} placeholder="Masukkan nama" maxLength={80} /><button className="button button-dark" disabled={busy}>Tambah</button></div><small>Kandidat dapat ditambahkan sampai suara pertama masuk.</small></form> : <p className="locked-note">Kandidat terkunci setelah suara pertama masuk atau voting berakhir.</p>}
+              <form className="admin-add-form" onSubmit={handleAddCandidate}><label htmlFor="candidate-name">Tambah nama kandidat</label><div className="admin-form-row"><input id="candidate-name" value={candidateName} onChange={(event) => setCandidateName(event.target.value)} placeholder="Masukkan nama" maxLength={80} disabled={busy || candidatesLocked} /><button className="button button-dark" disabled={busy || candidatesLocked}>Tambah nama</button></div><small>{candidatesLocked ? "Penambahan terkunci setelah suara pertama masuk atau voting berakhir." : "Kandidat dapat ditambahkan sampai suara pertama masuk."}</small></form>
             </section>
           </div>
           <section className="admin-card voter-table-card"><div className="admin-card-heading"><div><p className="eyebrow">AKTIVITAS ON-CHAIN</p><h3>Voter terbaru</h3></div><span className="live-label"><i /> diperbarui otomatis</span></div>
             {history.length ? <div className="voter-table-wrap"><table className="voter-table"><thead><tr><th>Wallet</th><th>Kandidat</th><th>Waktu</th><th>Transaksi</th></tr></thead><tbody>{history.slice(-8).reverse().map((item) => <tr key={item.transactionHash}><td><span className="table-check">✓</span><code>{shortAddress(item.voter)}</code></td><td>{candidates[item.candidateIndex]?.name || `Kandidat ${item.candidateIndex + 1}`}</td><td>{formatDate(item.timestamp)}</td><td><code title={item.transactionHash}>{item.transactionHash.slice(0, 10)}…</code></td></tr>)}</tbody></table></div> : <div className="table-empty">Belum ada voter. Aktivitas akan muncul setelah transaksi pertama.</div>}
           </section>
+          </>}
         </section>
       )}
 

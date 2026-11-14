@@ -156,6 +156,42 @@ h2, h3, p { margin-top: 0; }
 .voter-table code { font-size: 9px; }
 .table-check { width: 15px; height: 15px; flex: 0 0 15px; }
 .table-empty { padding: 28px 10px 8px; color: #8b9990; font-size: 11px; text-align: center; }
+.admin-access-card { display: flex; max-width: 540px; min-height: 330px; flex-direction: column; align-items: flex-start; justify-content: center; margin: 10px auto 35px; padding: 32px; border: 1px solid #e0e8df; border-radius: 12px; background: #fff; box-shadow: 0 12px 35px #183d2010; }
+.access-lock { display: grid; width: 42px; height: 42px; place-items: center; margin-bottom: 20px; border-radius: 12px; color: #487254; background: #eaf3e9; font-size: 23px; }
+.admin-access-card .eyebrow { margin-bottom: 7px; }
+.admin-access-card h2 { margin: 0 0 9px; font: 750 23px Manrope, sans-serif; }
+.admin-access-card > p:not(.eyebrow) { max-width: 390px; margin-bottom: 12px; color: #7e8e83; font-size: 12px; line-height: 1.6; }
+.admin-access-card > code { margin-bottom: 18px; padding: 9px 11px; border-radius: 6px; background: #f4f6f2; }
+.admin-access-card .access-note { margin: 14px 0 0 !important; font-size: 10px !important; }
+.admin-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin: -8px 0 17px; padding: 13px 16px; border: 1px solid #e1e8df; border-radius: 8px; background: #f9fbf7; }
+.admin-toolbar > div { display: flex; flex-direction: column; gap: 4px; }
+.admin-toolbar strong { font: 700 12px Manrope, sans-serif; }
+.admin-toolbar span { color: #839188; font-size: 10px; }
+.button-print { color: #345f43; border: 1px solid #d5e3d5; background: #fff; font-size: 11px; }
+.button-print:hover { background: #eff5ee; }
+.print-heading { display: none; }
+.admin-add-form input:disabled { color: #9ba79f; background: #f4f6f3; }
+
+@media print {
+  @page { size: A4 portrait; margin: 16mm; }
+  body, :root { color: #17291f !important; background: #fff !important; }
+  .app-shell { max-width: none; padding: 0; }
+  .topbar, .hero, .connection-strip, .notice, .mode-switch, .footer,
+  .admin-toolbar, .admin-heading, .admin-access-card, .voter-table-card,
+  .admin-add-form, .locked-note, .chart-legend { display: none !important; }
+  .admin-view { padding: 0; }
+  .print-heading { display: block; margin-bottom: 18px; padding-bottom: 13px; border-bottom: 2px solid #24563e; }
+  .print-heading p { margin: 0 0 5px; color: #60806a; font: 600 9px Arial, sans-serif; letter-spacing: 1.5px; }
+  .print-heading h1 { margin: 0 0 5px; font: 700 22px Arial, sans-serif; }
+  .print-heading span { color: #69776e; font: 9px monospace; }
+  .admin-stats { gap: 8px; }
+  .admin-stat-card, .admin-card { border-color: #d9e0d8; box-shadow: none; break-inside: avoid; }
+  .admin-dashboard-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chart-card { display: block !important; }
+  .voter-chart { min-height: 150px; }
+  .admin-candidate-row { border-color: #e5e9e4; }
+  .admin-candidate-row strong, .admin-candidate-row > span:last-child { color: #26382d; }
+}
 
 @media (max-width: 760px) {
   .app-shell { padding: 0 20px; }

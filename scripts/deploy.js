@@ -6,7 +6,7 @@ async function main() {
   const Voting = await hre.ethers.getContractFactory("Voting");
 
   // Nama kandidat default (boleh bebas)
-  const candidateNames = ["Royyan", "Maurin", "ChatGPT"];
+  const candidateNames = ["Prabowo Subianto", "Joko Widodo", "Anis Baswedan", "Ganjar Pranowo", "Ridwan Kamil"];
   const votingDurationSeconds = 7 * 24 * 60 * 60;
 
   console.log("Deploying contract...");
