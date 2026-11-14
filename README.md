@@ -1,69 +1,84 @@
-# Blockchain-Based Voting System
+# 🗳️ Blockchain-Based Voting System
 
-A decentralized voting application built with **Solidity, Hardhat, React, Vite, Ethers.js, and MetaMask**. This project demonstrates how blockchain technology can be used to create a transparent voting system with smart contract-based vote validation and wallet integration.
+A decentralized voting application built with **React, Vite, Solidity, Hardhat, Ethers.js, and MetaMask**. This project demonstrates the implementation of blockchain technology in a transparent voting system, where voting processes and results are managed through smart contracts.
 
-> **Project Status:** Local Development (Hardhat Local Network)
+> **Project Status:** Local Development  
+> **Blockchain Network:** Hardhat Local  
+> **Deployment:** Not deployed to a public blockchain.
 
-## Overview
+---
 
-The Blockchain-Based Voting System is a decentralized application (DApp) that allows users to participate in an electronic voting process through their MetaMask wallets.
+## 📌 Project Overview
 
-Voting operations are handled by a Solidity smart contract deployed on a local Hardhat blockchain network. Each wallet address is restricted to one vote, while voting records are stored transparently on the blockchain.
+The Blockchain-Based Voting System is a decentralized application (DApp) designed to provide a transparent and reliable electronic voting process using blockchain technology.
 
-The application provides two interfaces: User Mode for voters and Admin Mode for contract owners.
+The frontend is developed using React and Vite, while Solidity smart contracts handle voting logic, candidate management, and vote validation. Ethers.js connects the frontend to the smart contract, and MetaMask allows users to connect their wallets and authorize voting transactions.
 
-## Features
+The application provides two main modes:
 
-### User Mode
-- Connect a wallet using MetaMask.
-- View available candidates and their vote counts.
-- View vote percentages and total voting statistics.
-- Cast a vote through a MetaMask transaction.
-- Check whether the connected wallet has already voted.
-- View voting status and remaining duration.
-- Monitor voter activity and blockchain-based voting records.
+- **User Mode:** Allows voters to view candidates, cast votes, and monitor election results.
+- **Admin Mode:** Allows the contract owner to manage candidates and monitor voting activities.
 
-### Admin Mode
-- Restricted to the smart contract owner.
-- Add candidates before the first vote is submitted.
-- Monitor total voters and candidate statistics.
-- View daily voter activity through analytics charts.
-- Monitor recently registered voters.
-- Manage voting information through blockchain data.
+All voting transactions are recorded on the local blockchain network.
 
-## Voting Rules
+## ✨ Key Features
+
+### 👤 User Mode
+
+- **MetaMask Integration:** Connect a wallet to access the voting application.
+- **Candidate List:** View available candidates and their information.
+- **Voting System:** Cast a vote through a MetaMask transaction.
+- **Vote Statistics:** View total votes and percentage distribution for each candidate.
+- **Voter Information:** Monitor total voter participation and other voter statistics.
+- **Voting Status:** Check whether the connected wallet has already voted.
+- **Election Countdown:** View voting status and remaining time until the election ends.
+- **Blockchain Transparency:** Successfully submitted votes are recorded on the blockchain.
+
+### 🔐 Admin Mode
+
+Admin Mode is exclusively accessible to the wallet address that owns the deployed smart contract.
+
+- **Candidate Management:** Add new candidates before the first vote is submitted.
+- **Voting Statistics:** Monitor total voters, candidates, and election status.
+- **Voter Analytics:** View daily voter participation through statistical charts.
+- **Recent Voters:** Monitor the latest voting activity.
+- **Export Results:** Print or save election results as a PDF using the **Print Results** feature.
+
+## 📜 Voting Rules & Mechanism
+
+The voting process is governed by predefined smart contract rules to maintain consistency and transparency.
 
 | Rule | Description |
 |---|---|
-| One Wallet, One Vote | Each wallet address can vote only once. |
-| Candidate Management | Only the contract owner can add candidates. |
-| Candidate Lock | Candidates cannot be added after the first vote. |
-| Voting Duration | Voting remains open for seven days after contract deployment. |
-| Transparency | Voting transactions and voter addresses are publicly recorded on-chain. |
-| Vote Validation | Smart contract validates voting eligibility and candidate selection. |
+| One Wallet, One Vote | Each wallet address can only vote once. |
+| Admin Authorization | Only the contract owner can manage candidates. |
+| Candidate Lock | Candidate registration is locked after the first vote. |
+| Voting Duration | The election lasts seven days from smart contract deployment. |
+| Public Records | Wallet addresses and voting transactions are publicly recorded on the blockchain. |
+| Vote Validation | Voting eligibility and candidate selection are validated by the smart contract. |
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| React 19 | Frontend user interface |
-| Vite | Frontend development and build tool |
+| React | Frontend development |
+| Vite | Frontend build tool and development server |
 | JavaScript | Application logic |
-| Solidity 0.8.20 | Smart contract development |
-| Hardhat 2 | Local blockchain development environment |
-| Ethers.js 5 | Blockchain interaction |
+| Solidity | Smart contract development |
+| Hardhat | Local blockchain development and contract deployment |
+| Ethers.js | Interaction between frontend and smart contracts |
 | MetaMask | Wallet connection and transaction authorization |
 | CSS | User interface styling |
-| Node.js & npm | Development environment |
+| Node.js & npm | Development environment and package management |
 
-## System Architecture
+## 🏗️ System Architecture
 
 The application consists of four main components:
 
-1. **Frontend (React + Vite):** Displays the voting interface, candidate information, and voting statistics.
-2. **MetaMask:** Connects user wallets and requests transaction authorization.
-3. **Hardhat Local Network:** Provides a local Ethereum-compatible blockchain for development and testing.
-4. **Smart Contract (Solidity):** Handles candidate management, vote validation, voting duration, and vote recording.
+1. **Frontend:** React and Vite provide the user interface for voting, administration, and result monitoring.
+2. **Wallet Integration:** MetaMask connects user wallets and authorizes blockchain transactions.
+3. **Blockchain Network:** Hardhat Local provides an Ethereum-compatible environment for smart contract execution.
+4. **Smart Contract:** Solidity handles voting rules, candidate management, vote validation, and on-chain records.
 
 ### Voting Workflow
 
@@ -80,7 +95,21 @@ flowchart TD
     I --> J[Display Updated Dashboard]
 ```
 
-## Project Structure
+### Admin Workflow
+
+```mermaid
+flowchart TD
+    A[Connect MetaMask] --> B[Verify Wallet Address]
+    B --> C{Is Contract Owner?}
+    C -->|Yes| D[Access Admin Dashboard]
+    C -->|No| E[User Mode]
+    D --> F[Monitor Voting Statistics]
+    D --> G[Manage Candidates]
+    D --> H[View Recent Voters]
+    D --> I[Print or Export Results]
+```
+
+## 📂 Project Structure
 
 ```text
 voting-blockchain/
@@ -92,32 +121,49 @@ voting-blockchain/
 │   └── deploy.js
 │
 ├── test/
+│   └── Lock.js
 │
 ├── voting-frontend/
+│   ├── public/
+│   │   └── vite.svg
+│   │
 │   ├── src/
 │   │   ├── abi/
-│   │   └── config.js
+│   │   │   └── Voting.json
+│   │   ├── assets/
+│   │   │   └── react.svg
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── config.js
+│   │   ├── index.css
+│   │   └── main.jsx
+│   │
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
 │   ├── package.json
-│   └── ...
+│   ├── package-lock.json
+│   ├── README.md
+│   └── vite.config.js
 │
+├── .gitignore
 ├── hardhat.config.js
 ├── package.json
 ├── package-lock.json
 └── README.md
 ```
 
-## Installation & Setup
+## 🚀 Installation & Setup
 
-Follow these instructions to run the application locally.
+Follow these steps to run the application locally.
 
 ### Prerequisites
 
 Make sure you have installed:
 
-- Node.js
-- npm
-- MetaMask browser extension
+- Node.js and npm
 - Git
+- MetaMask browser extension
 
 ### 1. Clone the Repository
 
@@ -133,65 +179,50 @@ cd voting-blockchain
 npm install
 ```
 
-### 3. Start the Local Blockchain
+### 3. Start Hardhat Local Network
 
-Open a terminal and run:
+Open a terminal in the project root directory:
 
 ```bash
 npx hardhat node
 ```
 
-Keep the terminal running.
+Keep this terminal running while using the application.
 
-The local blockchain uses the following configuration:
+### 4. Compile the Smart Contract
 
-| Setting | Value |
-|---|---|
-| Network | Hardhat Local |
-| RPC URL | http://127.0.0.1:8545 |
-| Chain ID | 31337 |
-| Currency | ETH |
-
-### 4. Compile and Deploy the Smart Contract
-
-Open another terminal in the project root directory.
-
-Compile the contract:
+Open another terminal in the project root:
 
 ```bash
 npx hardhat compile
 ```
 
-Deploy it to the local network:
+### 5. Deploy the Smart Contract
+
+Run the deployment script:
 
 ```bash
 npx hardhat run scripts/deploy.js --network localhost
 ```
 
-The deployment script automatically:
+The deployment initializes the voting smart contract on the local Hardhat network.
 
-- Deploys the Voting smart contract.
-- Initializes the default candidates.
-- Sets the voting duration to seven days.
-- Updates the contract address in the frontend configuration.
-- Copies the compiled contract ABI into the frontend directory.
+### 6. Configure MetaMask
 
-### 5. Configure MetaMask
+Add a custom network to MetaMask with the following configuration:
 
-Add a custom network to MetaMask using these settings:
-
-| Setting | Value |
+| Configuration | Value |
 |---|---|
 | Network Name | Hardhat Local |
-| RPC URL | http://127.0.0.1:8545 |
-| Chain ID | 31337 |
+| RPC URL | `http://127.0.0.1:8545` |
+| Chain ID | `31337` |
 | Currency Symbol | ETH |
 
 Import one of the development accounts provided by Hardhat for local testing.
 
-**Important:** Hardhat development accounts and their private keys are public test credentials. Never use them on public networks or with real funds.
+**Important:** Only use Hardhat development accounts for local testing. Never use their private keys or seed phrases for real wallets or public networks.
 
-### 6. Install Frontend Dependencies
+### 7. Install Frontend Dependencies
 
 Open another terminal:
 
@@ -200,61 +231,79 @@ cd voting-frontend
 npm install
 ```
 
-### 7. Run the Frontend
+### 8. Run the Frontend
 
 ```bash
 npm run dev
 ```
 
-Open the local development URL displayed in your terminal, usually:
+Open the development URL displayed in your terminal, usually:
 
 ```text
 http://localhost:5173
 ```
 
-The application is now ready for local testing.
+The application is now ready to use.
 
-## Important Notes & Limitations
+## 🌐 Network Configuration
 
-- This project currently runs on a local Hardhat blockchain network.
-- It is not deployed to Sepolia or any public blockchain network.
-- The frontend requires the local Hardhat node and deployed contract to be running.
-- Restarting the Hardhat node resets its blockchain state and removes previous voting records.
-- The smart contract must be deployed again after restarting the local node.
-- MetaMask must be connected to the correct local network.
+This project currently uses the Hardhat Local Network.
 
-## Future Improvements
+| Configuration | Value |
+|---|---|
+| Network | Hardhat Local |
+| RPC Endpoint | `http://127.0.0.1:8545` |
+| Chain ID | `31337` |
+| Currency | ETH |
+| Environment | Local Development |
+
+The application is intended for local development, testing, and demonstration purposes.
+
+It is not currently deployed to Sepolia or any public blockchain network.
+
+## ⚠️ Limitations & Important Notes
+
+- The application requires a running Hardhat Local node.
+- The smart contract must be deployed before the frontend can interact with it.
+- Restarting or resetting Hardhat Local removes the existing local blockchain state and voting records.
+- The smart contract must be deployed again after a network reset.
+- MetaMask may need to refresh its account transaction data after a local network reset.
+- Voting records and wallet addresses are visible on the blockchain.
+- Public access requires deployment to a suitable public blockchain network and frontend hosting.
+
+## 🔮 Future Improvements
 
 Potential improvements for future development include:
 
-- Deploying the smart contract to an Ethereum testnet.
+- Deploying smart contracts to Sepolia Testnet.
 - Hosting the frontend for public access.
-- Integrating decentralized storage for additional voting-related information.
-- Improving smart contract security and testing coverage.
-- Adding more advanced voting analytics.
-- Enhancing accessibility and responsive user experience.
+- Implementing more comprehensive smart contract security testing.
+- Improving voter analytics and reporting.
+- Enhancing the user interface and accessibility.
+- Adding additional voting management capabilities.
 
-## Learning Outcomes
+## 📚 Learning Outcomes
 
-Through this project, I explored and implemented:
+This project provided practical experience in:
 
-- Smart contract development using Solidity.
+- Decentralized Application (DApp) development.
+- Smart contract programming using Solidity.
 - Local blockchain development with Hardhat.
 - Web3 integration using Ethers.js.
-- MetaMask wallet connectivity.
+- MetaMask wallet integration.
 - Blockchain transaction handling.
-- Smart contract access control and voting validation.
-- Building a decentralized application using React.
+- Smart contract access control.
+- Building interactive dashboards using React.
 
-## Author
+## 👨‍💻 Author
 
-**Fauzan Ar Royyan**
+**Fauzan Arroyyan**
 
 Informatics Graduate | Web Developer | AI & Machine Learning Enthusiast
 
 - GitHub: [@fauzanarroyyan19](https://github.com/fauzanarroyyan19)
-- Project Repository: [Blockchain-Based Voting System](https://github.com/fauzanarroyyan19/voting-blockchain)
+- Repository: [Blockchain-Based Voting System](https://github.com/fauzanarroyyan19/voting-blockchain)
 
 ---
 
-*Developed as a learning and portfolio project to explore blockchain technology and decentralized application development.*
+*Developed as a portfolio project to explore blockchain technology, smart contracts, and decentralized application development.*
